@@ -32,7 +32,7 @@ def generate_tex_file(expression, template_tex_file_body):
         new_body = template_tex_file_body.replace(
             TEX_TEXT_TO_REPLACE, expression
         )
-        with open(result, "w") as outfile:
+        with open(result, "w", encoding="utf-8") as outfile:
             outfile.write(new_body)
     return result
 
@@ -85,7 +85,7 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
             "0",
             "-o",
             result,
-            #"--libgs='/usr/local/Cellar/ghostscript/9.26_1/lib/libgs.dylib'" , # Enable this line with the directory pf libgs.dylib
+            #"--libgs='/usr/local/Cellar/ghostscript/9.26_1/lib/libgs.dylib'" ,
             ">",
             os.devnull
         ]

@@ -63,11 +63,6 @@ def parse_cli():
             help="Render to a movie file with an alpha channel",
         ),
         parser.add_argument(
-            "--hd",
-            action="store_true",
-            help="mp4 en alta definicion",
-        ),
-        parser.add_argument(
             "-q", "--quiet",
             action="store_true",
             help="",
@@ -105,7 +100,7 @@ def parse_cli():
         parser.add_argument(
             "--remove_progress_bars",
             action="store_false",
-            help="Remove progress bars in terminal",
+            help="Remove progress bars displayed in terminal",
         )
 
         # For live streaming
@@ -144,7 +139,7 @@ def parse_cli():
 def get_module(file_name):
     if file_name == "-":
         module = types.ModuleType("input_scenes")
-        code = "from big_ol_pile_of_manim_imports import *\n\n" + sys.stdin.read()
+        code = "from manimlib.imports import *\n\n" + sys.stdin.read()
         try:
             exec(code, module.__dict__)
             return module
@@ -170,7 +165,7 @@ def get_configuration(args):
         "png_mode": "RGBA" if args.transparent else "RGB",
         "movie_file_extension": ".mov" if args.transparent else ".mp4",
         "file_name": args.file_name,
-        "hd": args.hd
+        "input_file_path": args.file,
     }
     if hasattr(module, "OUTPUT_DIRECTORY"):
         file_writer_config["output_directory"] = module.OUTPUT_DIRECTORY
@@ -186,7 +181,7 @@ def get_configuration(args):
         "start_at_animation_number": args.start_at_animation_number,
         "end_at_animation_number": None,
         "sound": args.sound,
-        "remove_progress_bars": args.remove_progress_bars,
+        "remove_progress_bars": args.remove_progress_bars
     }
 
     # Camera configuration
