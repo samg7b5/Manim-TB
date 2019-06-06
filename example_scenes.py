@@ -1,87 +1,5 @@
 from manimlib.imports import *
 
-
-
-class OpeningManimExample(Scene):
-    def construct(self):
-        title = TextMobject("This is some \\LaTeX")
-        basel = TexMobject(
-            "\\sum_{n=1}^\\infty "
-            "\\frac{1}{n^2} = \\frac{\\pi^2}{6}"
-        )
-        VGroup(title, basel).arrange(DOWN)
-        self.play(
-            Write(title),
-            FadeInFrom(basel, UP),
-        )
-        self.wait()
-
-        transform_title = TextMobject("That was a transform")
-        transform_title.to_corner(UP + LEFT)
-        self.play(
-            Transform(title, transform_title),
-            LaggedStart(*map(FadeOutAndShiftDown, basel)),
-        )
-        self.wait()
-
-        grid = NumberPlane()
-        grid_title = TextMobject("This is a grid")
-        grid_title.scale(1.5)
-        grid_title.move_to(transform_title)
-
-        self.add(grid, grid_title)  # Make sure title is on top of grid
-        self.play(
-            FadeOut(title),
-            FadeInFromDown(grid_title),
-            ShowCreation(grid, run_time=3, lag_ratio=0.1),
-        )
-        self.wait()
-
-        grid_transform_title = TextMobject(
-            "That was a non-linear function \\\\"
-            "applied to the grid"
-        )
-        grid_transform_title.move_to(grid_title, UL)
-        grid.prepare_for_nonlinear_transform()
-        self.play(
-            grid.apply_function,
-            lambda p: p + np.array([
-                np.sin(p[1]),
-                np.sin(p[0]),
-                0,
-            ]),
-            run_time=3,
-        )
-        self.wait()
-        self.play(
-            Transform(grid_title, grid_transform_title)
-        )
-        self.wait()
-
-
-class SquareToCircle(Scene):
-    def construct(self):
-        circle = Circle()
-        square = Square()
-        square.flip(RIGHT)
-        square.rotate(-3 * TAU / 8)
-        circle.set_fill(PINK, opacity=0.5)
-
-        self.play(ShowCreation(square))
-        self.play(Transform(square, circle))
-        self.play(FadeOut(square))
-
-
-class WarpSquare(Scene):
-    def construct(self):
-        square = Square()
-        self.play(ApplyPointwiseFunction(
-            lambda point: complex_to_R3(np.exp(R3_to_complex(point))),
-            square
-        ))
-        self.wait()
-
-
 class WriteStuff(Scene):
     def construct(self):
         example_text = TextMobject(
@@ -99,36 +17,16 @@ class WriteStuff(Scene):
         self.play(Write(example_tex))
         self.wait()
 
-
-class UpdatersExample(Scene):
-    def construct(self):
-        decimal = DecimalNumber(
-            0,
-            show_ellipsis=True,
-            num_decimal_places=3,
-            include_sign=True,
-        )
-        square = Square().to_edge(UP)
-
-        decimal.add_updater(lambda d: d.next_to(square, RIGHT))
-        decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
-        self.add(square, decimal)
-        self.play(
-            square.to_edge, DOWN,
-            rate_func=there_and_back,
-            run_time=5,
-        )
-        self.wait()
-
+#Text and Formula: tex_template
 class PruebaText(Scene):
     def construct(self):
         grupo=VGroup(
-            Text("Holiñá"),
-            Formula("v\\to\\syx")
+            Text("Español"),Formula(r"\lim_{x\to\infty}\frac{1}{x}=0")
             ).arrange(DOWN)
 
         self.add(grupo)
 
+#Tikz: tex_template_tikz
 class PruebaTikz(Scene):
     def construct(self):
         grupo=VGroup(
@@ -141,14 +39,13 @@ class PruebaListing(Scene):
     def construct(self):
         grupo=VGroup(
             SimpleListings("""
-            for i:=maxint to 0 do
-            begin
-                {  do nothing }
-                end;
-            Write('Case insensitive ');
-            Write('Pascal keywords.');
+for i:=maxint to 0 do
+begin
+{  do nothing }
+end;
+Write('Case insensitive ');
+Write('Pascal keywords.');
             """))
-
         self.add(grupo)
 
 class PruebaMusic(Scene):
@@ -180,16 +77,17 @@ class Augie(GenericFont):
 
 class PruebaEmerald(Scene):
     def construct(self):
-        p=Augie("Hola mundi")
+        p=Augie("Theorem of Beethoven")
         self.add(p)
 
+#TextFull <- All packages LaTeX
 class PruebaFull(Scene):
     def construct(self):
-        p=TextFull("\\ECFAugie Alexander")
-        self.add(p)
+        text=TextFull("\\ECFAugie Alexander")
+        self.add(text)
 
-# See old_projects folder for many, many more
-
+#Tex test <- Create a new template class
+# tex_template_%s
 test_text,test_tex=get_template_tex(
     "test",
     begin="\\begin{equation}\n",
@@ -247,7 +145,7 @@ class ProgressionChords(MusicalScene):
         self.intervalos()
 
         self.salida_teclado()
-        
+
 
 
     def importar_partitura(self):
@@ -277,7 +175,7 @@ class ProgressionChords(MusicalScene):
                     [tt[0][0],tt[7][1],28,36]]
 
     def definir_colores(self):
-        
+
         self.colores_notas=[
                        ([21,20,29,28,36,37,47,46],self.colores[3]),
                        ([18,19,26,27,34,35,44,45],self.colores[2]),
@@ -293,17 +191,16 @@ class ProgressionChords(MusicalScene):
             TexMobject("\\mbox{V}",color=BLACK),
             TexMobject("\\mbox{I}",color=BLACK)
             )
-        
+
         bajo=[15,23,31,41]
         cifrado[0].next_to(self.partitura[15],DOWN,buff=1.3)
         cords_x=[*[self.partitura[w].get_center()[0]for w in bajo]]
-        
         for i in range(1,4):
             cifrado[i].move_to(cifrado[i-1])
             dis=cords_x[i]-cords_x[i-1]
             cifrado[i].shift(np.array([dis,0,0]))
 
-        self.cifrado=cifrado        
+        self.cifrado=cifrado
 
     def agregar_escenario(self):
         self.grupoA=VGroup(*[self.partitura[cont]for cont in [12,13]])
@@ -330,7 +227,7 @@ class ProgressionChords(MusicalScene):
         self.play(ReplacementTransform(i6m_v.copy(),i5J_v))
         self.ap_inter_h(i2m_h)
         self.play(ReplacementTransform(i2m_h,i5J_h))
-        
+
     def salida_teclado(self):
         self.play(*[
                 ApplyMethod(
@@ -348,7 +245,3 @@ class ProgressionChords(MusicalScene):
             *[LaggedStartMap(FadeOut,objeto,run_time=1)for objeto in self.mobjects],
             )
 
-class PruebaImages(Scene):
-    def construct(self):
-        im=Patreon()
-        self.add(im)
