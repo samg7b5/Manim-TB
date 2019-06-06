@@ -101,7 +101,7 @@ class TextTest(TexMobject):
 
 class PruebaTest(Scene):
     def construct(self):
-        t=TextTest("v\\to x")
+        t=TextTest("Zavden: v\\to x")
         self.add(t)
 
 class OmegaDice(Scene):
