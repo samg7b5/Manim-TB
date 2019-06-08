@@ -1,5 +1,5 @@
 from manimlib.imports import *
-
+import platform
 class WriteStuff(Scene):
     def construct(self):
         example_text = TextMobject(
@@ -20,6 +20,8 @@ class WriteStuff(Scene):
 #Text and Formula: tex_template
 class PruebaText(Scene):
     def construct(self):
+        current_os=platform.system()
+        print(current_os)
         grupo=VGroup(
             Text("Español"),Formula(r"\lim_{x\to\infty}\frac{1}{x}=0")
             ).arrange(DOWN)
