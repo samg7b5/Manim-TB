@@ -29,6 +29,16 @@ from manimlib.animation.specialized import *
 from manimlib.animation.transform import *
 from manimlib.animation.update import *
 
+#-----------Old animations
+from manimlib.old_animations.old_creation import *
+from manimlib.old_animations.old_transform import *
+from manimlib.old_animations.old_numbers import *
+from manimlib.old_animations.old_movement import *
+from manimlib.old_animations.old_update import *
+from manimlib.old_animations.old_indication import *
+from manimlib.old_animations.old_rotation import *
+#--------------------------
+
 from manimlib.camera.camera import *
 from manimlib.camera.mapping_camera import *
 from manimlib.camera.moving_camera import *
@@ -99,15 +109,6 @@ from manimlib.for_tb_videos.image_objects import *
 from manimlib.for_tb_videos.tb_objects import *
 from manimlib.for_tb_videos.tb_animations import *
 
-#-----------Old animations
-from manimlib.old_animations.old_creation import *
-from manimlib.old_animations.old_transform import *
-from manimlib.old_animations.old_numbers import *
-from manimlib.old_animations.old_movement import *
-from manimlib.old_animations.old_update import *
-from manimlib.old_animations.old_indication import *
-from manimlib.old_animations.old_rotation import *
-#--------------------------
 
 import inspect
 import itertools as it
