@@ -185,12 +185,12 @@ class Parentheses(TexMobject):
         return self
 
     def get_text(self, *text, **kwargs):
-        text_mob = TextMobject(*text)
+        text_mob = Text(*text)
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
     def get_tex(self, *tex, **kwargs):
-        tex_mob = TexMobject(*tex)
+        tex_mob = Formula(*tex)
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 

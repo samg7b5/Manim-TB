@@ -58,6 +58,11 @@ def parse_cli():
             help="Save the video as gif",
         ),
         parser.add_argument(
+            "-k","--custom_quality",
+            action="store_true",
+            help="Custom size in file",
+        ),
+        parser.add_argument(
             "-f", "--show_file_in_finder",
             action="store_true",
             help="Show the output file in finder",
@@ -216,6 +221,8 @@ def get_camera_configuration(args):
         camera_config.update(manimlib.constants.LOW_QUALITY_CAMERA_CONFIG)
     elif args.medium_quality:
         camera_config.update(manimlib.constants.MEDIUM_QUALITY_CAMERA_CONFIG)
+    elif args.custom_quality:
+        camera_config.update(manimlib.constants.CUSTOM_QUALITY_CAMERA_CONFIG)
     else:
         camera_config.update(manimlib.constants.PRODUCTION_QUALITY_CAMERA_CONFIG)
 

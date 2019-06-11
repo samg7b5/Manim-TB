@@ -4,4 +4,5 @@ files/Tex
 __pycache__/
 .DS_Store
 manimlib/.DS_Store
+3b1b_projects
 *.pyc

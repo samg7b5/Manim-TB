@@ -149,8 +149,8 @@ NO_SCENE_MESSAGE = """
 
 # There might be other configuration than pixel shape later...
 PRODUCTION_QUALITY_CAMERA_CONFIG = {
-    "pixel_height": 1440,
-    "pixel_width": 2560,
+    "pixel_height": 1080,
+    "pixel_width": 1920,
     "frame_rate": 30,
 }
 
@@ -170,6 +170,12 @@ LOW_QUALITY_CAMERA_CONFIG = {
     "pixel_height": 480,
     "pixel_width": 854,
     "frame_rate": 15,
+}
+
+CUSTOM_QUALITY_CAMERA_CONFIG = {
+    "pixel_height": 720,
+    "pixel_width": 1280,
+    "frame_rate": 10,
 }
 
 DEFAULT_PIXEL_HEIGHT = PRODUCTION_QUALITY_CAMERA_CONFIG["pixel_height"]
@@ -307,3 +313,12 @@ them to manim.play(), e.g.
 >>> c = Circle()
 >>> manim.play(ShowCreation(c))
 """
+
+def set_custom_quality(height,fps):
+    video_parameters=[
+        ("pixel_height",height),
+        ("pixel_width",int(height*16/9)),
+        ("frame_rate",fps)
+    ]
+    for v_property,v_value in video_parameters:
+        CUSTOM_QUALITY_CAMERA_CONFIG[v_property]=v_value
