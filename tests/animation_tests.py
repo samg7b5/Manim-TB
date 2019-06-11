@@ -1,6 +1,6 @@
 from manimlib.imports import *
 
-set_custom_quality(800,20)
+set_custom_quality(800,10)
 
 OUTPUT_DIRECTORY = "TESTS/ANIMATIONS_TESTS"
 
