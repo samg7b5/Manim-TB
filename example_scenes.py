@@ -251,7 +251,7 @@ class ProgressionChords(MusicalScene):
 class NewWriteScene(Scene):
     def construct(self):
         text=Text("Hola al mundo Alexander",color=RED)
-        self.Oldplay(NewWrite(text))
+        self.Oldplay(Escribe(text))
         self.wait()
 
 class AnimationFadeInFromLarge(Scene):

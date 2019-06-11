@@ -15,7 +15,7 @@ DEFAULT_LAGGED_START_LAG_RATIO = 0.05
 from manimlib.constants import *
 from manimlib.utils.bezier import inverse_interpolate
 from manimlib.utils.rate_functions import squish_rate_func
-from manimlib.animation.animation import OldAnimation
+from manimlib.animation.animation import NewAnimation
 import warnings
 
 
@@ -169,7 +169,7 @@ class LaggedStartMap(LaggedStart):
 
 #Old classes
 
-class OldEmptyAnimation(OldAnimation):
+class NewEmptyAnimation(NewAnimation):
     CONFIG = {
         "run_time": 0,
         "empty": True
@@ -179,7 +179,7 @@ class OldEmptyAnimation(OldAnimation):
         return Animation.__init__(self, Group(), *args, **kwargs)
 
 
-class OldSuccession(OldAnimation):
+class NewSuccession(NewAnimation):
     CONFIG = {
         "rate_func": None,
     }
@@ -334,7 +334,7 @@ class OldSuccession(OldAnimation):
             anim.clean_up(*args, **kwargs)
 
 
-class OldAnimationGroup(OldAnimation):
+class NewAnimationGroup(NewAnimation):
     CONFIG = {
         "rate_func": None
     }
@@ -371,7 +371,7 @@ class OldAnimationGroup(OldAnimation):
 # Variants on mappin an animation over submobjectsg
 
 
-class OldLaggedStart(OldAnimation):
+class NewLaggedStart(NewAnimation):
     CONFIG = {
         "run_time": 2,
         "lag_ratio": 0.5,
@@ -411,7 +411,7 @@ class OldLaggedStart(OldAnimation):
             anim.clean_up(*args, **kwargs)
 
 
-class OldApplyToCenters(OldAnimation):
+class NewApplyToCenters(NewAnimation):
     def __init__(self, AnimationClass, mobjects, **kwargs):
         full_kwargs = AnimationClass.CONFIG
         full_kwargs.update(kwargs)
