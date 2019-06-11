@@ -63,6 +63,10 @@ def parse_cli():
             help="Custom size in file",
         ),
         parser.add_argument(
+            "-x","--fps",
+            help="Custom fps",
+        ),
+        parser.add_argument(
             "-f", "--show_file_in_finder",
             action="store_true",
             help="Show the output file in finder",
@@ -182,7 +186,8 @@ def get_configuration(args):
         "movie_file_extension": ".mov" if args.transparent else ".mp4",
         "file_name": args.file_name,
         "input_file_path": args.file,
-        "hd": args.hd
+        "hd": args.hd,
+        "fps": args.fps
     }
     if hasattr(module, "OUTPUT_DIRECTORY"):
         file_writer_config["output_directory"] = module.OUTPUT_DIRECTORY
@@ -228,6 +233,10 @@ def get_camera_configuration(args):
     elif args.medium_quality:
         camera_config.update(manimlib.constants.MEDIUM_QUALITY_CAMERA_CONFIG)
     elif args.custom_quality:
+        try:
+            manimlib.constants.CUSTOM_QUALITY_CAMERA_CONFIG["frame_rate"]=int(args.fps)
+        except:
+            pass
         camera_config.update(manimlib.constants.CUSTOM_QUALITY_CAMERA_CONFIG)
     else:
         camera_config.update(manimlib.constants.PRODUCTION_QUALITY_CAMERA_CONFIG)

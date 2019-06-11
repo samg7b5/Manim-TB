@@ -1,5 +1,7 @@
 from manimlib.imports import *
 
+set_custom_quality(800,10)
+
 class RedesEspanhol(Scene):
     def construct(self):
         twitter = Twitter()
@@ -89,10 +91,10 @@ class RedesIngles(Scene):
         patreon.add(back_negro)
 
         redes_s=VGroup(*[obj.set_height(2.5)for obj in [patreon,reddits,twitter,instagram]])\
-                .arrange_submobjects(RIGHT,buff=0.8)
+                .arrange(RIGHT,buff=0.8)
         redes_s.move_to(ORIGIN)
         redes_f=redes_s.copy()
-        redes_f.arrange_submobjects(
+        redes_f.arrange(
             DOWN, aligned_edge=LEFT, buff=0.4
             )
         texto=VGroup(
@@ -127,8 +129,8 @@ class RedesIngles(Scene):
         
 
         #self.play(FadeIn(circles))
-        self.play(redes_f.shift,RIGHT*2,
-            UpdateFromFunc(circles,update),
+        self.Oldplay(redes_f.shift,RIGHT*2,
+            OldUpdateFromFunc(circles,update),
             *[Escribe(texto[i])for i in range(len(texto))])
         circles.set_fill(WHITE,1)
         self.add(circles)
@@ -139,8 +141,8 @@ class RedesIngles(Scene):
         
         
         for x in range(2):
-            self.play(
-                ShowPassingFlash(
+            self.Oldplay(
+                OldShowPassingFlash(
                     redes_fc[:-1], 
                     time_width = 0.5,
                     run_time = 2,
