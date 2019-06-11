@@ -21,9 +21,9 @@ if not os.path.isdir(MEDIA_DIR):
     )
 
 VIDEO_DIR = os.path.join("videos")
-RASTER_IMAGE_DIR = os.path.join("raster_images")
-SVG_IMAGE_DIR = os.path.join("svg_images")
-SOUND_DIR = os.path.join("sounds")
+RASTER_IMAGE_DIR = os.path.join("media","raster_images")
+SVG_IMAGE_DIR = os.path.join("media","svg_images")
+SOUND_DIR = os.path.join("media","sounds")
 ###
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 FILE_DIR = os.path.join(os.getenv("FILE_DIR", default="."), "files")

@@ -430,7 +430,7 @@ class Bubble(SVGMobject):
         try:
             SVGMobject.__init__(self, **kwargs)
         except IOError as err:
-            self.file_name = os.path.join("svg_images","omega_creature", self.file_name)
+            self.file_name = os.path.join("media","svg_images","omega_creature", self.file_name)
             SVGMobject.__init__(self, **kwargs)
         self.center()
         self.stretch_to_fit_height(self.height)

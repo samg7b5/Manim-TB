@@ -29,7 +29,7 @@ from manimlib.utils.config_ops import digest_config
 from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.rate_functions import there_and_back
 
-pi_creature_dir_maybe = os.path.join("svg_images","omega_creature")
+pi_creature_dir_maybe = os.path.join("media","svg_images","omega_creature")
 if os.path.exists(pi_creature_dir_maybe):
     PI_CREATURE_DIR = pi_creature_dir_maybe
 else:
@@ -78,6 +78,7 @@ class OmegaCreature(SVGMobject):
             warnings.warn("No %s design with mode %s" %
                           (self.file_name_prefix, mode))
             svg_file = os.path.join(
+                "media",
                 "svg_images","omega_creature",
                 "OmegaCreature_plain.svg",
             )

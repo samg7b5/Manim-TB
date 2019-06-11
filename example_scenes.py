@@ -13,7 +13,7 @@ class WriteStuff(Scene):
         group.arrange(DOWN)
         group.set_width(FRAME_WIDTH - 2 * LARGE_BUFF)
 
-        self.play(Write(example_text))
+        self.Oldplay(Escribe(example_text))
         self.play(Write(example_tex))
         self.wait()
 
@@ -211,9 +211,9 @@ class ProgressionChords(MusicalScene):
         self.mandar_frente_sostenido(4,self.teclado_base)
         self.mandar_frente_sostenido(4,self.teclado_transparente)
 
-        self.play(*[LaggedStartMap(GrowFromCenter, self.partitura[i],run_time=2)for i in range(1,11)],
-            LaggedStartMap(DrawBorderThenFill,self.teclado_base),LaggedStartMap(DrawBorderThenFill,self.teclado_transparente),
-            Write(titulo),*[GrowFromCenter(x)for x in self.grupoA]
+        self.Oldplay(*[OldLaggedStart(OldGrowFromCenter, self.partitura[i],run_time=2)for i in range(1,11)],
+            OldLaggedStart(OldDrawBorderThenFill,self.teclado_base),OldLaggedStart(OldDrawBorderThenFill,self.teclado_transparente),
+            Escribe(titulo),*[OldGrowFromCenter(x)for x in self.grupoA]
             )
 
 
