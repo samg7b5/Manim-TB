@@ -14,6 +14,7 @@ from manimlib.utils.paths import straight_path
 from manimlib.utils.rate_functions import smooth
 from manimlib.utils.rate_functions import squish_rate_func
 
+from manimlib.animation.animation import NewAnimation
 
 class Transform(Animation):
     CONFIG = {
@@ -319,3 +320,142 @@ class TransformAnimations(Transform):
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
         Transform.interpolate(self, alpha)
+
+
+#News
+
+class NewTransform(NewAnimation):
+    CONFIG = {
+        "path_arc": 0,
+        "path_arc_axis": OUT,
+        "path_func": None,
+        "replace_mobject_with_target_in_scene": False,
+    }
+
+    def __init__(self, mobject, target_mobject=None, **kwargs):
+        super().__init__(mobject, **kwargs)
+        self.target_mobject = target_mobject
+        self.init_path_func()
+
+    def init_path_func(self):
+        if self.path_func is not None:
+            return
+        elif self.path_arc == 0:
+            self.path_func = straight_path
+        else:
+            self.path_func = path_along_arc(
+                self.path_arc,
+                self.path_arc_axis,
+            )
+
+    def begin(self):
+        # Use a copy of target_mobject for the align_data
+        # call so that the actual target_mobject stays
+        # preserved.
+        self.target_mobject = self.create_target()
+        self.check_target_mobject_validity()
+        self.target_copy = self.target_mobject.copy()
+        # Note, this potentially changes the structure
+        # of both mobject and target_mobject
+        self.mobject.align_data(self.target_copy)
+        super().begin()
+
+    def create_target(self):
+        # Has no meaningful effect here, but may be useful
+        # in subclasses
+        return self.target_mobject
+
+    def check_target_mobject_validity(self):
+        if self.target_mobject is None:
+            message = "{}.create_target not properly implemented"
+            raise Exception(
+                message.format(self.__class__.__name__)
+            )
+
+    def clean_up_from_scene(self, scene):
+        super().clean_up_from_scene(scene)
+        if self.replace_mobject_with_target_in_scene:
+            scene.remove(self.mobject)
+            scene.add(self.target_mobject)
+
+    def update_config(self, **kwargs):
+        Animation.update_config(self, **kwargs)
+        if "path_arc" in kwargs:
+            self.path_func = path_along_arc(
+                kwargs["path_arc"],
+                kwargs.get("path_arc_axis", OUT)
+            )
+
+    def get_all_mobjects(self):
+        return [
+            self.mobject,
+            self.starting_mobject,
+            self.target_mobject,
+            self.target_copy,
+        ]
+
+    def get_all_families_zipped(self):
+        return zip(*[
+            mob.family_members_with_points()
+            for mob in [
+                self.mobject,
+                self.starting_mobject,
+                self.target_copy,
+            ]
+        ])
+
+    def interpolate_submobject(self, submob, start, target_copy, alpha):
+        submob.interpolate(
+            start, target_copy,
+            alpha, self.path_func
+        )
+        return self
+
+class NewMoveToTarget(NewTransform):
+    def __init__(self, mobject, **kwargs):
+        self.check_validity_of_input(mobject)
+        super().__init__(mobject, mobject.target, **kwargs)
+
+    def check_validity_of_input(self, mobject):
+        if not hasattr(mobject, "target"):
+            raise Exception(
+                "MoveToTarget called on mobject"
+                "without attribute 'target'"
+            )
+
+
+class NewApplyMethod(NewTransform):
+    def __init__(self, method, *args, **kwargs):
+        """
+        method is a method of Mobject, *args are arguments for
+        that method.  Key word arguments should be passed in
+        as the last arg, as a dict, since **kwargs is for
+        configuration of the transform itslef
+
+        Relies on the fact that mobject methods return the mobject
+        """
+        self.check_validity_of_input(method)
+        self.method = method
+        self.method_args = args
+        super().__init__(method.__self__, **kwargs)
+
+    def check_validity_of_input(self, method):
+        if not inspect.ismethod(method):
+            raise Exception(
+                "Whoops, looks like you accidentally invoked "
+                "the method you want to animate"
+            )
+        assert(isinstance(method.__self__, Mobject))
+
+    def create_target(self):
+        method = self.method
+        # Make sure it's a list so that args.pop() works
+        args = list(self.method_args)
+
+        if len(args) > 0 and isinstance(args[-1], dict):
+            method_kwargs = args.pop()
+        else:
+            method_kwargs = {}
+        target = method.__self__.copy()
+        method.__func__(target, *args, **method_kwargs)
+        return target

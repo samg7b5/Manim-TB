@@ -6,8 +6,11 @@ from tqdm import tqdm as ProgressDisplay
 import numpy as np
 
 from manimlib.animation.animation import Animation
+from manimlib.animation.animation import NewAnimation
 from manimlib.animation.creation import Write
+from manimlib.animation.creation import NewWrite
 from manimlib.animation.transform import MoveToTarget, ApplyMethod
+from manimlib.animation.transform import NewMoveToTarget, NewApplyMethod
 from manimlib.camera.camera import Camera
 from manimlib.constants import *
 from manimlib.container.container import Container
@@ -387,6 +390,68 @@ class Scene(Container):
 
         return animations
 
+    def Oldcompile_play_args_to_animation_list(self, *args):
+        """
+        Each arg can either be an animation, or a mobject method
+        followed by that methods arguments (and potentially follow
+        by a dict of kwargs for that method).
+        This animation list is built by going through the args list,
+        and each animation is simply added, but when a mobject method
+        s hit, a MoveToTarget animation is built using the args that
+        follow up until either another animation is hit, another method
+        is hit, or the args list runs out.
+        """
+        animations = []
+        state = {
+            "curr_method": None,
+            "last_method": None,
+            "method_args": [],
+        }
+
+        def compile_method(state):
+            if state["curr_method"] is None:
+                return
+            mobject = state["curr_method"].__self__
+            if state["last_method"] and state["last_method"].__self__ is mobject:
+                animations.pop()
+                # method should already have target then.
+            else:
+                mobject.generate_target()
+            #
+            if len(state["method_args"]) > 0 and isinstance(state["method_args"][-1], dict):
+                method_kwargs = state["method_args"].pop()
+            else:
+                method_kwargs = {}
+            state["curr_method"].__func__(
+                mobject.target,
+                *state["method_args"],
+                **method_kwargs
+            )
+            animations.append(NewMoveToTarget(mobject))
+            state["last_method"] = state["curr_method"]
+            state["curr_method"] = None
+            state["method_args"] = []
+
+        for arg in args:
+            if isinstance(arg, NewAnimation):
+                compile_method(state)
+                animations.append(arg)
+            elif inspect.ismethod(arg):
+                compile_method(state)
+                state["curr_method"] = arg
+            elif state["curr_method"] is not None:
+                state["method_args"].append(arg)
+            elif isinstance(arg, Mobject):
+                raise Exception("""
+                    I think you may have invoked a method
+                    you meant to pass in as a Scene.play argument
+                """)
+            else:
+                raise Exception("Invalid play arguments")
+        compile_method(state)
+        return animations
+
+
     def update_skipping_status(self):
         if self.start_at_animation_number:
             if self.num_plays == self.start_at_animation_number:
@@ -455,6 +520,18 @@ class Scene(Container):
             warnings.warn("Called Scene.play with no animations")
             return
         animations = self.compile_play_args_to_animation_list(
+            *args, **kwargs
+        )
+        self.begin_animations(animations)
+        self.progress_through_animations(animations)
+        self.finish_animations(animations)
+
+    @handle_play_like_call
+    def Oldplay(self, *args, **kwargs):
+        if len(args) == 0:
+            warnings.warn("Called Scene.play with no animations")
+            return
+        animations = self.Oldcompile_play_args_to_animation_list(
             *args, **kwargs
         )
         self.begin_animations(animations)
