@@ -40,11 +40,11 @@ class ChatBubble(VMobject):
 		self.tip_h = self.bubble.points[16,1] - self.bubble.points[20,1]
 		self.text.move_to(self.bubble.get_corner(LEFT+DOWN)+np.array([border,self.tip_h+border,0]), aligned_edge = LEFT+DOWN)
 		size_shift = self.text.get_corner(UP+RIGHT) - self.bubble.get_corner(UP+RIGHT) + border
-		shift_w = size_shift[0]
-		shift_h = size_shift[1]
+		shift_w = size_shift[0];print("[%f]"%(self.tip_h))
+		shift_h = size_shift[1];print(*size_shift)
 		for p in self.bubble.points[26:]: p[0] += shift_w
-		for p in self.bubble.points[-1:4]: p[1] += shift_h
-		#for p in self.bubble.points[25:-5]: p[1] += shift_h
+		#for p in self.bubble.points[-10:16]: p[1] += shift_h
+		#for p in self.bubble.points[-36:13]: p[1] += shift_h
 		self.add(self.bubble, self.text)
 
 		if answer_bubble:
@@ -100,7 +100,7 @@ class Conversation:
 		shift = height - bubble.tip_h + 0.2
 		dialog_target = self.dialog.copy()
 		dialog_target.shift([0, shift, 0])
-		bubble[0].set_stroke(None,5)
+		bubble[0].set_stroke(None,0)
 		#bubble.set_fill(opacity=0.7)
 		#bubble.set_fill(bubble[0].get_color())
 		bubble_target = bubble.copy()

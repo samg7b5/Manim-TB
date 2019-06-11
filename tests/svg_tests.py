@@ -34,9 +34,9 @@ class Conversacion(Scene):
         conversation = Conversation(self)
         conversation.add_bubble("Hola!")
         self.wait(2)
-        conversation.add_bubble("Hola, qué tal?")
+        conversation.add_bubble("Hola, qué tal?\\\\ como tas")
         self.wait(2)
-        conversation.add_bubble("Esta es mi primera animación de\\\\ conversación.")
+        conversation.add_bubble("Esta es mi primera animación de\\\\ conversación.\\\\ para ver que tal")
         self.wait(3) # 41
         conversation.add_bubble("Está muy bien!")
         self.wait(2) # 48
