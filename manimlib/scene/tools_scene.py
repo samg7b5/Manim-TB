@@ -202,7 +202,7 @@ class CheckSVGPoints(CheckSVGNumbers):
                         color=punto.get_color(),
                         background_stroke_width=self.shadow_point_number
                         )
-                    number_point.set_width(self.size_points_numbers)\
+                    number_point.set_height(self.size_points_numbers)\
                                 .next_to(punto,
                                     self.number_point_direction,
                                     buff=self.number_point_buff
