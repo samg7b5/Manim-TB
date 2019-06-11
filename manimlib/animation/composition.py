@@ -15,7 +15,7 @@ DEFAULT_LAGGED_START_LAG_RATIO = 0.05
 from manimlib.constants import *
 from manimlib.utils.bezier import inverse_interpolate
 from manimlib.utils.rate_functions import squish_rate_func
-from manimlib.animation.animation import NewAnimation
+from manimlib.animation.animation import OldAnimation
 import warnings
 
 
@@ -167,19 +167,19 @@ class LaggedStartMap(LaggedStart):
         ]
         super().__init__(*animations, **kwargs)
 
-#Old classes
+#Old classes --------------------------------------------
 
-class NewEmptyAnimation(NewAnimation):
+class OldEmptyAnimation(OldAnimation):
     CONFIG = {
         "run_time": 0,
         "empty": True
     }
 
     def __init__(self, *args, **kwargs):
-        return Animation.__init__(self, Group(), *args, **kwargs)
+        return OldAnimation.__init__(self, Group(), *args, **kwargs)
 
 
-class NewSuccession(NewAnimation):
+class OldSuccession(OldAnimation):
     CONFIG = {
         "rate_func": None,
     }
@@ -219,7 +219,7 @@ class NewSuccession(NewAnimation):
             state["curr_class_config"] = {}
 
         for arg in args:
-            if isinstance(arg, Animation):
+            if isinstance(arg, OldAnimation):
                 animations.append(arg)
                 arg.update(1)
                 invoke_curr_class(state)
@@ -273,7 +273,7 @@ class NewSuccession(NewAnimation):
         else:
             self.mobject = Group()
 
-        Animation.__init__(self, self.mobject, run_time=run_time, **kwargs)
+        OldAnimation.__init__(self, self.mobject, run_time=run_time, **kwargs)
 
     # Beware: This does NOT take care of calling update(0) on the subanimation.
     # This was important to avoid a pernicious possibility in which subanimations were called
@@ -334,7 +334,7 @@ class NewSuccession(NewAnimation):
             anim.clean_up(*args, **kwargs)
 
 
-class NewAnimationGroup(NewAnimation):
+class OldAnimationGroup(OldAnimation):
     CONFIG = {
         "rate_func": None
     }
@@ -350,7 +350,7 @@ class NewAnimationGroup(NewAnimation):
         else:
             self.run_time = max([a.run_time for a in sub_anims])
         everything = Mobject(*[a.mobject for a in sub_anims])
-        Animation.__init__(self, everything, **kwargs)
+        OldAnimation.__init__(self, everything, **kwargs)
 
     def update(self, alpha):
         for anim in self.sub_anims:
@@ -361,7 +361,7 @@ class NewAnimationGroup(NewAnimation):
             anim.clean_up(*args, **kwargs)
 
     def update_config(self, **kwargs):
-        Animation.update_config(self, **kwargs)
+        OldAnimation.update_config(self, **kwargs)
 
         # If AnimationGroup is called with any configuration,
         # it is propagated to the sub_animations
@@ -371,7 +371,7 @@ class NewAnimationGroup(NewAnimation):
 # Variants on mappin an animation over submobjectsg
 
 
-class NewLaggedStart(NewAnimation):
+class OldLaggedStart(OldAnimation):
     CONFIG = {
         "run_time": 2,
         "lag_ratio": 0.5,
@@ -399,7 +399,7 @@ class NewLaggedStart(NewAnimation):
                 np.linspace(0, 1 - self.lag_ratio, len(mobject))
             )
         ]
-        Animation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
 
     def update(self, alpha):
         for anim in self.subanimations:
@@ -411,7 +411,7 @@ class NewLaggedStart(NewAnimation):
             anim.clean_up(*args, **kwargs)
 
 
-class NewApplyToCenters(NewAnimation):
+class OldApplyToCenters(OldAnimation):
     def __init__(self, AnimationClass, mobjects, **kwargs):
         full_kwargs = AnimationClass.CONFIG
         full_kwargs.update(kwargs)
@@ -421,7 +421,7 @@ class NewApplyToCenters(NewAnimation):
         ])
         self.centers_container = AnimationClass(**full_kwargs)
         full_kwargs.pop("mobject")
-        Animation.__init__(self, Mobject(*mobjects), **full_kwargs)
+        OldAnimation.__init__(self, Mobject(*mobjects), **full_kwargs)
         self.name = str(self) + AnimationClass.__name__
 
     def update_mobject(self, alpha):

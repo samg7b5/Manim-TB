@@ -17,7 +17,7 @@ from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.constants import *
 from manimlib.utils.iterables import adjacent_pairs
 from manimlib.utils.space_ops import complex_to_R3
-from manimlib.animation.animation import NewAnimation
+from manimlib.animation.animation import OldAnimation
 
 def instantiate(obj):
     """
@@ -335,7 +335,7 @@ class TransformAnimations(Transform):
 
 #News
 
-class NewTransform(NewAnimation):
+class OldTransform(OldAnimation):
     CONFIG = {
         "path_arc": 0,
         "path_arc_axis": OUT,
@@ -353,11 +353,11 @@ class NewTransform(NewAnimation):
         digest_config(self, kwargs)
         self.init_path_func()
 
-        NewAnimation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
         self.name += "To" + str(target_mobject)
 
     def update_config(self, **kwargs):
-        NewAnimation.update_config(self, **kwargs)
+        OldAnimation.update_config(self, **kwargs)
         if "path_arc" in kwargs:
             self.path_func = path_along_arc(
                 kwargs["path_arc"],
@@ -383,21 +383,20 @@ class NewTransform(NewAnimation):
         return self
 
     def clean_up(self, surrounding_scene=None):
-        NewAnimation.clean_up(self, surrounding_scene)
+        OldAnimation.clean_up(self, surrounding_scene)
         if self.replace_mobject_with_target_in_scene and surrounding_scene is not None:
             surrounding_scene.remove(self.mobject)
             if not self.remover:
                 surrounding_scene.add(self.original_target_mobject)
 
-class NewMoveToTarget(NewTransform):
+class OldMoveToTarget(OldTransform):
     def __init__(self, mobject, **kwargs):
         if not hasattr(mobject, "target"):
             raise Exception(
                 "MoveToTarget called on mobject without attribute 'target' ")
-        NewTransform.__init__(self, mobject, mobject.target, **kwargs)
+        OldTransform.__init__(self, mobject, mobject.target, **kwargs)
 
-
-class NewApplyMethod(NewTransform):
+class OldApplyMethod(OldTransform):
     CONFIG = {
         "submobject_mode": "all_at_once"
     }
@@ -424,5 +423,5 @@ class NewApplyMethod(NewTransform):
             method_kwargs = {}
         target = method.__self__.copy()
         method.__func__(target, *args, **method_kwargs)
-        NewTransform.__init__(self, method.__self__, target, **kwargs)
+        OldTransform.__init__(self, method.__self__, target, **kwargs)
 

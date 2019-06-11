@@ -99,6 +99,10 @@ from manimlib.for_tb_videos.image_objects import *
 from manimlib.for_tb_videos.tb_objects import *
 from manimlib.for_tb_videos.tb_animations import *
 
+#-----------Old animations
+from manimlib.old_animations.old_creation import *
+#--------------------------
+
 import inspect
 import itertools as it
 import numpy as np

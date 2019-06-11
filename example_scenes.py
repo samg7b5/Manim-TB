@@ -250,8 +250,17 @@ class ProgressionChords(MusicalScene):
 
 class NewWriteScene(Scene):
     def construct(self):
-        text=Text("Hola al mundo Alexander",color=RED)
-        self.Oldplay(Escribe(text))
+        text_in=input("Escribe texto:")
+        text=Text(text_in,color=RED)
+        self.Oldplay(
+						OldFadeInFromLarge(
+						text,
+						scale_factor=1.3,
+						submobject_mode="lagged_start",
+						rate_func=linear,
+						run_time=1.5
+					)
+        			)
         self.wait()
 
 class AnimationFadeInFromLarge(Scene):

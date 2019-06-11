@@ -185,7 +185,7 @@ def instantiate(obj):
     """
     return obj() if isinstance(obj, type) else obj
 
-class NewAnimation(object):
+class OldAnimation(object):
     CONFIG = {
         "run_time": DEFAULT_ANIMATION_RUN_TIME,
         "rate_func": smooth,

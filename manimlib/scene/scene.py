@@ -6,11 +6,11 @@ from tqdm import tqdm as ProgressDisplay
 import numpy as np
 
 from manimlib.animation.animation import Animation
-from manimlib.animation.animation import NewAnimation
+from manimlib.animation.animation import OldAnimation
 from manimlib.animation.creation import Write
-from manimlib.animation.creation import NewWrite
+from manimlib.animation.creation import OldWrite
 from manimlib.animation.transform import MoveToTarget, ApplyMethod
-from manimlib.animation.transform import NewMoveToTarget, NewApplyMethod
+from manimlib.animation.transform import OldMoveToTarget, OldApplyMethod
 from manimlib.camera.camera import Camera
 from manimlib.constants import *
 from manimlib.container.container import Container
@@ -428,13 +428,13 @@ class Scene(Container):
                 *state["method_args"],
                 **method_kwargs
             )
-            animations.append(NewMoveToTarget(mobject))
+            animations.append(OldMoveToTarget(mobject))
             state["last_method"] = state["curr_method"]
             state["curr_method"] = None
             state["method_args"] = []
 
         for arg in args:
-            if isinstance(arg, NewAnimation):
+            if isinstance(arg, OldAnimation):
                 compile_method(state)
                 animations.append(arg)
             elif inspect.ismethod(arg):
