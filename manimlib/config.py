@@ -68,6 +68,11 @@ def parse_cli():
             help="Show the output file in finder",
         ),
         parser.add_argument(
+            "--hd",
+            action="store_true",
+            help="mp4 en alta definicion",
+        ),
+        parser.add_argument(
             "-t", "--transparent",
             action="store_true",
             help="Render to a movie file with an alpha channel",
@@ -177,6 +182,7 @@ def get_configuration(args):
         "movie_file_extension": ".mov" if args.transparent else ".mp4",
         "file_name": args.file_name,
         "input_file_path": args.file,
+        "hd": args.hd
     }
     if hasattr(module, "OUTPUT_DIRECTORY"):
         file_writer_config["output_directory"] = module.OUTPUT_DIRECTORY

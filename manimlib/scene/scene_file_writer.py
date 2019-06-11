@@ -37,6 +37,7 @@ class SceneFileWriter(object):
         "file_name": None,
         "output_directory": None,
         "file_name": None,
+        "hd":False,
     }
 
     def __init__(self, scene, **kwargs):
@@ -242,7 +243,14 @@ class SceneFileWriter(object):
                 # '-vcodec', 'png',
             ]
         else:
-            command += [
+            if self.hd:
+                command += [
+                '-vcodec', 'libx264',
+                '-preset','fast','-crf','0',
+                '-pix_fmt', 'yuv420p',
+            ]
+            else:
+                command += [
                 '-vcodec', 'libx264',
                 '-pix_fmt', 'yuv420p',
             ]
