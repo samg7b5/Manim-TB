@@ -2,12 +2,13 @@ import inspect
 
 import numpy as np
 
-from manimlib.animation.animation import Animation
+from manimlib.animation.animation import OldAnimation
+from manimlib.animation.transform import OldTransform,OldMoveToTarget,OldApplyMethod
+from manimlib.animation.transform import instantiate
 from manimlib.constants import *
 from manimlib.mobject.mobject import Group
 from manimlib.mobject.mobject import Mobject
 from manimlib.utils.config_ops import digest_config
-from manimlib.utils.config_ops import instantiate
 from manimlib.utils.iterables import adjacent_pairs
 from manimlib.utils.paths import path_along_arc
 from manimlib.utils.paths import straight_path
@@ -16,95 +17,40 @@ from manimlib.utils.rate_functions import squish_rate_func
 from manimlib.utils.space_ops import complex_to_R3
 
 
-class Transform(Animation):
-    CONFIG = {
-        "path_arc": 0,
-        "path_arc_axis": OUT,
-        "path_func": None,
-        "submobject_mode": "all_at_once",
-        "replace_mobject_with_target_in_scene": False,
-    }
-
-    def __init__(self, mobject, target_mobject, **kwargs):
-        # Copy target_mobject so as to not mess with caller
-        self.original_target_mobject = target_mobject
-        target_mobject = target_mobject.copy()
-        mobject.align_data(target_mobject)
-        self.target_mobject = target_mobject
-        digest_config(self, kwargs)
-        self.init_path_func()
-
-        Animation.__init__(self, mobject, **kwargs)
-        self.name += "To" + str(target_mobject)
-
-    def update_config(self, **kwargs):
-        Animation.update_config(self, **kwargs)
-        if "path_arc" in kwargs:
-            self.path_func = path_along_arc(
-                kwargs["path_arc"],
-                kwargs.get("path_arc_axis", OUT)
-            )
-
-    def init_path_func(self):
-        if self.path_func is not None:
-            return
-        elif self.path_arc == 0:
-            self.path_func = straight_path
-        else:
-            self.path_func = path_along_arc(
-                self.path_arc,
-                self.path_arc_axis,
-            )
-
-    def get_all_mobjects(self):
-        return self.mobject, self.starting_mobject, self.target_mobject
-
-    def update_submobject(self, submob, start, end, alpha):
-        submob.interpolate(start, end, alpha, self.path_func)
-        return self
-
-    def clean_up(self, surrounding_scene=None):
-        Animation.clean_up(self, surrounding_scene)
-        if self.replace_mobject_with_target_in_scene and surrounding_scene is not None:
-            surrounding_scene.remove(self.mobject)
-            if not self.remover:
-                surrounding_scene.add(self.original_target_mobject)
-
-
-class ReplacementTransform(Transform):
+class OldReplacementTransform(OldTransform):
     CONFIG = {
         "replace_mobject_with_target_in_scene": True,
     }
 
 
-class TransformFromCopy(ReplacementTransform):
+class OldTransformFromCopy(OldReplacementTransform):
     def __init__(self, mobject, target_mobject, **kwargs):
-        ReplacementTransform.__init__(
+        OldReplacementTransform.__init__(
             self, mobject.deepcopy(), target_mobject, **kwargs
         )
 
 
-class ClockwiseTransform(Transform):
+class OldClockwiseTransform(OldTransform):
     CONFIG = {
         "path_arc": -np.pi
     }
 
 
-class CounterclockwiseTransform(Transform):
+class OldCounterclockwiseTransform(OldTransform):
     CONFIG = {
         "path_arc": np.pi
     }
 
 
-class MoveToTarget(Transform):
+class OldMoveToTarget(OldTransform):
     def __init__(self, mobject, **kwargs):
         if not hasattr(mobject, "target"):
             raise Exception(
                 "MoveToTarget called on mobject without attribute 'target' ")
-        Transform.__init__(self, mobject, mobject.target, **kwargs)
+        OldTransform.__init__(self, mobject, mobject.target, **kwargs)
 
 
-class ApplyMethod(Transform):
+class OldApplyMethod(OldTransform):
     CONFIG = {
         "submobject_mode": "all_at_once"
     }
@@ -131,50 +77,50 @@ class ApplyMethod(Transform):
             method_kwargs = {}
         target = method.__self__.copy()
         method.__func__(target, *args, **method_kwargs)
-        Transform.__init__(self, method.__self__, target, **kwargs)
+        OldTransform.__init__(self, method.__self__, target, **kwargs)
 
 
-class ApplyPointwiseFunction(ApplyMethod):
+class OldApplyPointwiseFunction(OldApplyMethod):
     CONFIG = {
         "run_time": DEFAULT_POINTWISE_FUNCTION_RUN_TIME
     }
 
     def __init__(self, function, mobject, **kwargs):
-        ApplyMethod.__init__(
+        OldApplyMethod.__init__(
             self, mobject.apply_function, function, **kwargs
         )
 
 
-class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
+class OldApplyPointwiseFunctionToCenter(OldApplyPointwiseFunction):
     def __init__(self, function, mobject, **kwargs):
-        ApplyMethod.__init__(
+        OldApplyMethod.__init__(
             self, mobject.move_to, function(mobject.get_center()), **kwargs
         )
 
 
-class FadeToColor(ApplyMethod):
+class OldFadeToColor(OldApplyMethod):
     def __init__(self, mobject, color, **kwargs):
-        ApplyMethod.__init__(self, mobject.set_color, color, **kwargs)
+        OldApplyMethod.__init__(self, mobject.set_color, color, **kwargs)
 
 
-class ScaleInPlace(ApplyMethod):
+class OldScaleInPlace(OldApplyMethod):
     def __init__(self, mobject, scale_factor, **kwargs):
-        ApplyMethod.__init__(self, mobject.scale_in_place,
+        OldApplyMethod.__init__(self, mobject.scale_in_place,
                              scale_factor, **kwargs)
 
 
-class Restore(ApplyMethod):
+class OldRestore(OldApplyMethod):
     def __init__(self, mobject, **kwargs):
-        ApplyMethod.__init__(self, mobject.restore, **kwargs)
+        OldApplyMethod.__init__(self, mobject.restore, **kwargs)
 
 
-class ApplyFunction(Transform):
+class OldApplyFunction(OldTransform):
     CONFIG = {
         "submobject_mode": "all_at_once",
     }
 
     def __init__(self, function, mobject, **kwargs):
-        Transform.__init__(
+        OldTransform.__init__(
             self,
             mobject,
             function(mobject.copy()),
@@ -183,7 +129,7 @@ class ApplyFunction(Transform):
         self.name = "ApplyFunctionTo" + str(mobject)
 
 
-class ApplyMatrix(ApplyPointwiseFunction):
+class OldApplyMatrix(OldApplyPointwiseFunction):
     # Truth be told, I'm not sure if this is useful.
     def __init__(self, matrix, mobject, **kwargs):
         matrix = np.array(matrix)
@@ -197,16 +143,16 @@ class ApplyMatrix(ApplyPointwiseFunction):
 
         def func(p):
             return np.dot(p, transpose)
-        ApplyPointwiseFunction.__init__(self, func, mobject, **kwargs)
+        OldApplyPointwiseFunction.__init__(self, func, mobject, **kwargs)
 
 
-class ComplexFunction(ApplyPointwiseFunction):
+class OldComplexFunction(OldApplyPointwiseFunction):
     def __init__(self, function, mobject, **kwargs):
         if "path_func" not in kwargs:
             self.path_func = path_along_arc(
                 np.log(function(complex(1))).imag
             )
-        ApplyPointwiseFunction.__init__(
+        OldApplyPointwiseFunction.__init__(
             self,
             lambda x_y_z: complex_to_R3(function(complex(x_y_z[0], x_y_z[1]))),
             instantiate(mobject),
@@ -216,7 +162,7 @@ class ComplexFunction(ApplyPointwiseFunction):
 ###
 
 
-class CyclicReplace(Transform):
+class OldCyclicReplace(OldTransform):
     CONFIG = {
         "path_arc": np.pi / 2
     }
@@ -227,16 +173,16 @@ class CyclicReplace(Transform):
             m1.copy().move_to(m2)
             for m1, m2 in adjacent_pairs(start)
         ])
-        Transform.__init__(self, start, target, **kwargs)
+        OldTransform.__init__(self, start, target, **kwargs)
 
 
-class Swap(CyclicReplace):
+class OldSwap(OldCyclicReplace):
     pass  # Renaming, more understandable for two entries
 
 # TODO: Um...does this work
 
 
-class TransformAnimations(Transform):
+class OldTransformAnimations(OldTransform):
     CONFIG = {
         "rate_func": squish_rate_func(smooth)
     }
@@ -256,7 +202,7 @@ class TransformAnimations(Transform):
                 if hasattr(anim, "target_mobject"):
                     anim.starting_mobject.align_data(anim.target_mobject)
 
-        Transform.__init__(self, start_anim.mobject,
+        OldTransform.__init__(self, start_anim.mobject,
                            end_anim.mobject, **kwargs)
         # Rewire starting and ending mobjects
         start_anim.mobject = self.starting_mobject
@@ -265,4 +211,4 @@ class TransformAnimations(Transform):
     def update(self, alpha):
         self.start_anim.update(alpha)
         self.end_anim.update(alpha)
-        Transform.update(self, alpha)
+        OldTransform.update(self, alpha)

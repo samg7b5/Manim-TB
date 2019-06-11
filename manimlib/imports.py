@@ -101,6 +101,12 @@ from manimlib.for_tb_videos.tb_animations import *
 
 #-----------Old animations
 from manimlib.old_animations.old_creation import *
+from manimlib.old_animations.old_transform import *
+from manimlib.old_animations.old_numbers import *
+from manimlib.old_animations.old_movement import *
+from manimlib.old_animations.old_update import *
+from manimlib.old_animations.old_indication import *
+from manimlib.old_animations.old_rotation import *
 #--------------------------
 
 import inspect

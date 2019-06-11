@@ -1,9 +1,9 @@
-from manimlib.animation.animation import Animation
+from manimlib.animation.animation import OldAnimation
 from manimlib.constants import *
 from manimlib.utils.config_ops import digest_config
 
 
-class Homotopy(Animation):
+class OldHomotopy(OldAnimation):
     CONFIG = {
         "run_time": 3,
         "apply_function_kwargs": {},
@@ -17,7 +17,7 @@ class Homotopy(Animation):
             return lambda p: homotopy(p[0], p[1], p[2], t)
         self.function_at_time_t = function_at_time_t
         digest_config(self, kwargs)
-        Animation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
 
     def update_submobject(self, submob, start, alpha):
         submob.points = start.points
@@ -27,13 +27,13 @@ class Homotopy(Animation):
         )
 
 
-class SmoothedVectorizedHomotopy(Homotopy):
+class OldSmoothedVectorizedHomotopy(OldHomotopy):
     def update_submobject(self, submob, start, alpha):
-        Homotopy.update_submobject(self, submob, start, alpha)
+        OldHomotopy.update_submobject(self, submob, start, alpha)
         submob.make_smooth()
 
 
-class ComplexHomotopy(Homotopy):
+class OldComplexHomotopy(OldHomotopy):
     def __init__(self, complex_homotopy, mobject, **kwargs):
         """
         Complex Hootopy a function Cx[0, 1] to C
@@ -41,10 +41,10 @@ class ComplexHomotopy(Homotopy):
         def homotopy(x, y, z, t):
             c = complex_homotopy(complex(x, y), t)
             return (c.real, c.imag, z)
-        Homotopy.__init__(self, homotopy, mobject, **kwargs)
+        OldHomotopy.__init__(self, homotopy, mobject, **kwargs)
 
 
-class PhaseFlow(Animation):
+class OldPhaseFlow(OldAnimation):
     CONFIG = {
         "virtual_time": 1,
         "rate_func": None,
@@ -63,10 +63,10 @@ class PhaseFlow(Animation):
         self.last_alpha = alpha
 
 
-class MoveAlongPath(Animation):
+class OldMoveAlongPath(OldAnimation):
     def __init__(self, mobject, path, **kwargs):
         digest_config(self, kwargs, locals())
-        Animation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
 
     def update_mobject(self, alpha):
         point = self.path.point_from_proportion(alpha)

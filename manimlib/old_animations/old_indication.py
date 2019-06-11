@@ -3,15 +3,15 @@ from functools import reduce
 import numpy as np
 
 from manimlib.constants import *
-from manimlib.animation.animation import Animation
-from manimlib.animation.movement import Homotopy
-from manimlib.animation.composition import AnimationGroup
-from manimlib.animation.composition import Succession
-from manimlib.animation.creation import ShowCreation
-from manimlib.animation.creation import ShowPartial
-from manimlib.animation.creation import FadeOut
-from manimlib.animation.transform import Transform
-from manimlib.animation.update import UpdateFromAlphaFunc
+from manimlib.animation.animation import OldAnimation
+from manimlib.old_animations.old_movement import OldHomotopy
+from manimlib.animation.composition import OldAnimationGroup
+from manimlib.animation.composition import OldSuccession
+from manimlib.old_animations.old_creation import OldShowCreation
+from manimlib.old_animations.old_creation import OldShowPartial
+from manimlib.old_animations.old_creation import OldFadeOut
+from manimlib.old_animations.old_transform import OldTransform
+from manimlib.old_animations.old_update import OldUpdateFromAlphaFunc
 from manimlib.mobject.mobject import Mobject
 from manimlib.mobject.geometry import Circle
 from manimlib.mobject.geometry import Dot
@@ -27,7 +27,7 @@ from manimlib.utils.rate_functions import wiggle
 from manimlib.utils.rate_functions import double_smooth
 
 
-class FocusOn(Transform):
+class OldFocusOn(OldTransform):
     CONFIG = {
         "opacity": 0.2,
         "color": GREY,
@@ -47,10 +47,10 @@ class FocusOn(Transform):
         little_dot.set_fill(self.color, opacity=self.opacity)
         little_dot.move_to(mobject_or_point)
 
-        Transform.__init__(self, big_dot, little_dot, **kwargs)
+        OldTransform.__init__(self, big_dot, little_dot, **kwargs)
 
 
-class Indicate(Transform):
+class OldIndicate(OldTransform):
     CONFIG = {
         "rate_func": there_and_back,
         "scale_factor": 1.2,
@@ -62,10 +62,10 @@ class Indicate(Transform):
         target = mobject.copy()
         target.scale_in_place(self.scale_factor)
         target.set_color(self.color)
-        Transform.__init__(self, mobject, target, **kwargs)
+        OldTransform.__init__(self, mobject, target, **kwargs)
 
 
-class Flash(AnimationGroup):
+class OldFlash(OldAnimationGroup):
     CONFIG = {
         "line_length": 0.2,
         "num_lines": 12,
@@ -85,13 +85,13 @@ class Flash(AnimationGroup):
         lines.set_color(color)
         lines.set_stroke(width=3)
         line_anims = [
-            ShowCreationThenDestruction(
+            OldShowCreationThenDestruction(
                 line, rate_func=squish_rate_func(smooth, 0, 0.5)
             )
             for line in lines
         ]
         fade_anims = [
-            UpdateFromAlphaFunc(
+            OldUpdateFromAlphaFunc(
                 line, lambda m, a: m.set_stroke(
                     width=self.line_stroke_width * (1 - a)
                 ),
@@ -100,12 +100,12 @@ class Flash(AnimationGroup):
             for line in lines
         ]
 
-        AnimationGroup.__init__(
+        OldAnimationGroup.__init__(
             self, *line_anims + fade_anims, **kwargs
         )
 
 
-class CircleIndicate(Indicate):
+class OldCircleIndicate(OldIndicate):
     CONFIG = {
         "rate_func": squish_rate_func(there_and_back, 0, 0.8),
         "remover": True
@@ -115,10 +115,10 @@ class CircleIndicate(Indicate):
         digest_config(self, kwargs)
         circle = Circle(color=self.color, **kwargs)
         circle.surround(mobject)
-        Indicate.__init__(self, circle, **kwargs)
+        OldIndicate.__init__(self, circle, **kwargs)
 
 
-class ShowPassingFlash(ShowPartial):
+class OldShowPassingFlash(OldShowPartial):
     CONFIG = {
         "time_width": 0.1,
         "remover": True,
@@ -132,39 +132,39 @@ class ShowPassingFlash(ShowPartial):
         return (lower, upper)
 
     def clean_up(self, *args, **kwargs):
-        ShowPartial.clean_up(self, *args, **kwargs)
+        OldShowPartial.clean_up(self, *args, **kwargs)
         for submob, start_submob in self.get_all_families_zipped():
             submob.pointwise_become_partial(start_submob, 0, 1)
 
 
-class ShowCreationThenDestruction(ShowPassingFlash):
+class OldShowCreationThenDestruction(OldShowPassingFlash):
     CONFIG = {
         "time_width": 2.0,
         "run_time": 1,
     }
 
 
-class ShowCreationThenFadeOut(Succession):
+class OldShowCreationThenFadeOut(OldSuccession):
     CONFIG = {
         "remover": True,
     }
 
     def __init__(self, mobject, **kwargs):
-        Succession.__init__(
+        OldSuccession.__init__(
             self,
-            ShowCreation, mobject,
-            FadeOut, mobject,
+            OldShowCreation, mobject,
+            OldFadeOut, mobject,
             **kwargs
         )
 
 
-class AnimationOnSurroundingRectangle(AnimationGroup):
+class OldAnimationOnSurroundingRectangle(OldAnimationGroup):
     CONFIG = {
         "surrounding_rectangle_config": {},
         # Function which takes in a rectangle, and spits
         # out some animation.  Could be some animation class,
         # could be something more
-        "rect_to_animation": Animation
+        "rect_to_animation": OldAnimation
     }
 
     def __init__(self, mobject, **kwargs):
@@ -174,31 +174,31 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         )
         if "surrounding_rectangle_config" in kwargs:
             kwargs.pop("surrounding_rectangle_config")
-        AnimationGroup.__init__(self, self.rect_to_animation(rect, **kwargs))
+        OldAnimationGroup.__init__(self, self.rect_to_animation(rect, **kwargs))
 
 
-class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
+class OldShowPassingFlashAround(OldAnimationOnSurroundingRectangle):
     CONFIG = {
-        "rect_to_animation": ShowPassingFlash
+        "rect_to_animation": OldShowPassingFlash
     }
 
 
-class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
+class OldShowCreationThenDestructionAround(OldAnimationOnSurroundingRectangle):
     CONFIG = {
-        "rect_to_animation": ShowCreationThenDestruction
+        "rect_to_animation": OldShowCreationThenDestruction
     }
 
 
-class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
+class OldShowCreationThenFadeAround(OldAnimationOnSurroundingRectangle):
     CONFIG = {
-        "rect_to_animation": lambda rect: Succession(
-            ShowCreation, rect,
-            FadeOut, rect,
+        "rect_to_animation": lambda rect: OldSuccession(
+            OldShowCreation, rect,
+            OldFadeOut, rect,
         )
     }
 
 
-class ApplyWave(Homotopy):
+class OldApplyWave(OldHomotopy):
     CONFIG = {
         "direction": UP,
         "amplitude": 0.2,
@@ -217,10 +217,10 @@ class ApplyWave(Homotopy):
             power = np.exp(2.0 * (alpha - 0.5))
             nudge = there_and_back(t**power)
             return np.array([x, y, z]) + nudge * vect
-        Homotopy.__init__(self, homotopy, mobject, **kwargs)
+        OldHomotopy.__init__(self, homotopy, mobject, **kwargs)
 
 
-class WiggleOutThenIn(Animation):
+class OldWiggleOutThenIn(OldAnimation):
     CONFIG = {
         "scale_value": 1.1,
         "rotation_angle": 0.01 * TAU,
@@ -236,7 +236,7 @@ class WiggleOutThenIn(Animation):
             self.scale_about_point = mobject.get_center()
         if self.rotate_about_point is None:
             self.rotate_about_point = mobject.get_center()
-        Animation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
 
     def update_submobject(self, submobject, starting_sumobject, alpha):
         submobject.points[:, :] = starting_sumobject.points
@@ -250,7 +250,7 @@ class WiggleOutThenIn(Animation):
         )
 
 
-class Vibrate(Animation):
+class OldVibrate(OldAnimation):
     CONFIG = {
         "spatial_period": 6,
         "temporal_period": 1,
@@ -264,7 +264,7 @@ class Vibrate(Animation):
     def __init__(self, mobject=None, **kwargs):
         if mobject is None:
             mobject = Line(3 * LEFT, 3 * RIGHT)
-        Animation.__init__(self, mobject, **kwargs)
+        OldAnimation.__init__(self, mobject, **kwargs)
 
     def wave_function(self, x, t):
         return sum([
@@ -292,7 +292,7 @@ class Vibrate(Animation):
             )
 
 
-class TurnInsideOut(Transform):
+class OldTurnInsideOut(OldTransform):
     CONFIG = {
         "path_arc": TAU / 4,
     }
@@ -300,4 +300,4 @@ class TurnInsideOut(Transform):
     def __init__(self, mobject, **kwargs):
         mob_copy = mobject.copy()
         mob_copy.reverse_points()
-        Transform.__init__(self, mobject, mob_copy, **kwargs)
+        OldTransform.__init__(self, mobject, mob_copy, **kwargs)

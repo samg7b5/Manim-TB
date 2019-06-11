@@ -1,12 +1,12 @@
 import numpy as np
 
-from manimlib.animation.animation import Animation
-from manimlib.animation.transform import Transform
+from manimlib.animation.animation import OldAnimation
+from manimlib.animation.transform import OldTransform
 from manimlib.constants import *
 from manimlib.utils.config_ops import digest_config
 
 
-class Rotating(Animation):
+class OldRotating(OldAnimation):
     CONFIG = {
         "axis": OUT,
         "radians": TAU,
@@ -21,7 +21,7 @@ class Rotating(Animation):
         submobject.points = np.array(starting_submobject.points)
 
     def update_mobject(self, alpha):
-        Animation.update_mobject(self, alpha)
+        OldAnimation.update_mobject(self, alpha)
         if self.in_place and self.about_point is None:
             self.about_point = self.mobject.get_center()
         self.mobject.rotate(
@@ -32,7 +32,7 @@ class Rotating(Animation):
         )
 
 
-class Rotate(Transform):
+class OldRotate(OldTransform):
     CONFIG = {
         "in_place": False,
         "about_point": None,
@@ -52,4 +52,4 @@ class Rotate(Transform):
             axis=axis,
             about_point=self.about_point,
         )
-        Transform.__init__(self, mobject, target, **kwargs)
+        OldTransform.__init__(self, mobject, target, **kwargs)

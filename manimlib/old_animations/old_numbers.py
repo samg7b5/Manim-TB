@@ -1,9 +1,9 @@
-from manimlib.animation.animation import Animation
+from manimlib.animation.animation import OldAnimation
 from manimlib.utils.bezier import interpolate
 from manimlib.utils.config_ops import digest_config
 
 
-class ChangingDecimal(Animation):
+class OldChangingDecimal(OldAnimation):
     CONFIG = {
         "num_decimal_places": None,
         "show_ellipsis": None,
@@ -19,7 +19,7 @@ class ChangingDecimal(Animation):
             tmc = self.tracked_mobject.get_center()
             self.diff_from_tracked_mobject = dmc - tmc
             self.diff_from_tracked_mobject = dmc - tmc
-        Animation.__init__(self, decimal_number_mobject, **kwargs)
+        OldAnimation.__init__(self, decimal_number_mobject, **kwargs)
 
     def update_mobject(self, alpha):
         self.update_number(alpha)
@@ -38,10 +38,10 @@ class ChangingDecimal(Animation):
                 self.tracked_mobject.get_center() + self.diff_from_tracked_mobject)
 
 
-class ChangeDecimalToValue(ChangingDecimal):
+class OldChangeDecimalToValue(OldChangingDecimal):
     def __init__(self, decimal_number_mobject, target_number, **kwargs):
         start_number = decimal_number_mobject.number
 
         def func(alpha):
             return interpolate(start_number, target_number, alpha)
-        ChangingDecimal.__init__(self, decimal_number_mobject, func, **kwargs)
+        OldChangingDecimal.__init__(self, decimal_number_mobject, func, **kwargs)
