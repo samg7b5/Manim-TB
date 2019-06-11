@@ -247,3 +247,28 @@ class ProgressionChords(MusicalScene):
             *[LaggedStartMap(FadeOut,objeto,run_time=1)for objeto in self.mobjects],
             )
 
+
+class NewWrite(Scene):
+    def construct(self):
+        text=Text("Hola al mundo Alexander",color=RED)
+        self.play(Write(text,lag_ratio=0.01))
+        self.wait()
+        #self.play(DrawBorderThenFill(text))
+        #self.wait()
+
+class AnimationFadeInFromLarge(Scene):
+    def construct(self):
+        square = Square()
+
+        for factor in [0.1, 0.5, 0.8, 1, 2, 5]:
+            anno = TextMobject(f"Fade In from large scale\_factor={factor}")
+            anno.shift(2 * DOWN)
+            self.add(anno)
+
+            self.play(FadeInFromLarge(square, scale_factor=factor))
+            self.remove(anno, square)
+
+class GridScene(Scene):
+    def construct(self):
+        grid=ScreenGrid(rows=3,columns=4)
+        self.add(grid)
