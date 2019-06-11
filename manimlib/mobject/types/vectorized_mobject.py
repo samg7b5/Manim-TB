@@ -939,3 +939,4 @@ class DashedVMobject(VMobject):
         # Family is already taken care of by get_subcurve
         # implementation
         self.match_style(vmobject, family=False)
+

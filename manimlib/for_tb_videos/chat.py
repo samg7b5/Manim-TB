@@ -20,7 +20,10 @@ class ChatBubble(VMobject):
 		VMobject.__init__(self, **kwargs)
 		self.answer_bubble = answer_bubble
 
-		self.bubble = SVGMobject(file_name = "mix/Speach.svg", initial_scale_factor = 0.02)[0]
+		self.bubble = SVGMobject(file_name = "mix/Speach.svg",
+         initial_scale_factor = 0.02,
+         unpack_groups= True
+         )[0]
 		#self.bubble.set_fill(BLACK, opacity = background_chat_opacity)
 
 		if answer_bubble: self.bubble.set_stroke(self.answer_color)
@@ -34,14 +37,14 @@ class ChatBubble(VMobject):
 
 		self.text = TextMobject(text, alignment="\\raggedright\\hsize = 0.7\\hsize",color=self.text_color)
 		#print(self.text.get_tex_string())
-		self.tip_h = self.bubble.points[12,1] - self.bubble.points[15,1]
+		self.tip_h = self.bubble.points[16,1] - self.bubble.points[20,1]
 		self.text.move_to(self.bubble.get_corner(LEFT+DOWN)+np.array([border,self.tip_h+border,0]), aligned_edge = LEFT+DOWN)
 		size_shift = self.text.get_corner(UP+RIGHT) - self.bubble.get_corner(UP+RIGHT) + border
 		shift_w = size_shift[0]
 		shift_h = size_shift[1]
-		for p in self.bubble.points[19:31]: p[0] += shift_w
-		for p in self.bubble.points[:4]: p[1] += shift_h
-		for p in self.bubble.points[25:]: p[1] += shift_h
+		for p in self.bubble.points[26:]: p[0] += shift_w
+		for p in self.bubble.points[-1:4]: p[1] += shift_h
+		#for p in self.bubble.points[25:-5]: p[1] += shift_h
 		self.add(self.bubble, self.text)
 
 		if answer_bubble:

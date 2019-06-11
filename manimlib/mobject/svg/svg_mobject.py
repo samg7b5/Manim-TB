@@ -414,3 +414,6 @@ class VMobjectFromSVGPathstring(VMobject):
 
     def get_original_path_string(self):
         return self.path_string
+
+#------------------------------------------------------------
+#------------------------------------------------------------

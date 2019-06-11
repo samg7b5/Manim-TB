@@ -13,6 +13,22 @@ class CheckSpeach(CheckSVGPoints):
     "get_cero":True,
 	}
 
+class CheckSpeach2(CheckSVGPoints):
+    CONFIG={
+    "svg_type":"custom",
+    "scale":1.5,
+    "shadow_point_number":1,
+    "show_element_points":[0],
+    }
+    def custom_object(self):
+        chat=SVGMobject("mix/speach2")[0]
+        chat.move_to(ORIGIN)
+        #custom
+        chat.points[5:11] += UP*0.1
+        chat.points[7:11] += UP*0.1
+        chat.rotate(PI/2)
+        return chat
+
 class Conversacion(Scene):
     def construct(self):
         conversation = Conversation(self)
