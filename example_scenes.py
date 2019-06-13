@@ -279,3 +279,11 @@ class GridScene(Scene):
     def construct(self):
         grid=ScreenGrid(rows=3,columns=4)
         self.add(grid)
+
+class Transform1(Scene):
+    def construct(self):
+        text1=TextMobject("Derivative")
+        text2=TextMobject("Integral")
+        self.play(Write(text1))
+        self.play(Transform(text1,text2))
+        self.wait()
