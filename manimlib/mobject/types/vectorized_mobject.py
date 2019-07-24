@@ -858,6 +858,40 @@ class VMobject(Mobject):
             ))
         return self
 
+    def pointwise_become_partial_mod(self, vmobject, a, b):
+        assert(isinstance(vmobject, VMobject))
+        # Partial curve includes three portions:
+        # - A middle section, which matches the curve exactly
+        # - A start, which is some ending portion of an inner cubic
+        # - An end, which is the starting portion of a later inner cubic
+        if a <= 0 and b >= 1:
+            self.set_points(vmobject.points)
+            return self
+        bezier_quads = vmobject.get_cubic_bezier_tuples()
+        num_cubics = len(bezier_quads)
+
+        lower_index, lower_residue = integer_interpolate(0, num_cubics, a)
+        upper_index, upper_residue = integer_interpolate(0, num_cubics, b)
+
+        self.clear_points()
+        if num_cubics == 0:
+            return self
+        if lower_index == upper_index:
+            self.append_points(partial_bezier_points(
+                bezier_quads[lower_index],
+                lower_residue, upper_residue
+            ))
+        else:
+            self.append_points(partial_bezier_points(
+                bezier_quads[lower_index], lower_residue, 1
+            ))
+            for quad in bezier_quads[lower_index + 1:upper_index]:
+                self.append_points(quad)
+            self.append_points(partial_bezier_points(
+                bezier_quads[upper_index], 0, upper_residue
+            ))
+        return self
+
     def get_subcurve(self, a, b):
         vmob = self.copy()
         vmob.pointwise_become_partial(self, a, b)

@@ -26,6 +26,17 @@ class ShowPartial(Animation):
             start_submob, *self.get_bounds(alpha)
         )
 
+class ShowPartialInverse(Animation):
+    """
+    Abstract class for ShowCreation and ShowPassingFlash
+    """
+
+    def interpolate_submobject(self, submob, start_submob, alpha):
+        array=[*self.get_bounds(alpha)]
+        submob.pointwise_become_partial(
+            start_submob, *array
+        )
+
     def get_bounds(self, alpha):
         raise Exception("Not Implemented")
 
@@ -37,6 +48,15 @@ class ShowCreation(ShowPartial):
 
     def get_bounds(self, alpha):
         return (0, alpha)
+
+class ShowCreationMod(ShowPartial):
+    CONFIG = {
+        "lag_ratio": 1,
+        "alpha_change":4,
+    }
+
+    def get_bounds(self, alpha):
+        return (0, alpha*self.alpha_change)
 
 
 class Uncreate(ShowCreation):
@@ -96,6 +116,117 @@ class DrawBorderThenFill(Animation):
             submob.pointwise_become_partial(
                 outline, 0, subalpha
             )
+            submob.match_style(outline)
+        else:
+            submob.interpolate(outline, start, subalpha)
+
+
+class NewWrite(Animation):
+    CONFIG = {
+        "run_time": 2,
+        "rate_func": linear,
+        "stroke_width": 2,
+        "stroke_color": None,
+        "draw_border_animation_config": {},
+        "fill_animation_config": {},
+        "velocity":2,
+        "submobject_mode":"lagged_start"
+    }
+
+    def __init__(self, vmobject, **kwargs):
+        self.check_validity_of_input(vmobject)
+        super().__init__(vmobject, **kwargs)
+
+    def check_validity_of_input(self, vmobject):
+        if not isinstance(vmobject, VMobject):
+            raise Exception(
+                "DrawBorderThenFill only works for VMobjects"
+            )
+
+    def begin(self):
+        self.outline = self.get_outline()
+        super().begin()
+
+    def get_outline(self):
+        outline = self.mobject.copy()
+        outline.set_fill(opacity=0)
+        for sm in outline.family_members_with_points():
+            sm.set_stroke(
+                color=self.get_stroke_color(sm),
+                width=self.stroke_width
+            )
+        return outline
+
+    def get_stroke_color(self, vmobject):
+        if self.stroke_color:
+            return self.stroke_color
+        elif vmobject.get_stroke_width() > 0:
+            return vmobject.get_stroke_color()
+        return vmobject.get_color()
+
+    def get_all_mobjects(self):
+        return [*super().get_all_mobjects(), self.outline]
+
+    def interpolate_submobject(self, submob, start, outline, alpha):
+        index, subalpha = integer_interpolate(0, 2, alpha)
+        if index == 0:
+            submob.pointwise_become_partial(
+                outline, 0, subalpha*self.velocity
+            )
+            submob.match_style(outline)
+        else:
+            submob.interpolate(outline, start, subalpha)
+
+class DrawBorderThenFillMod(Animation):
+    CONFIG = {
+        "run_time": 2,
+        "rate_func": double_smooth,
+        "stroke_width": 2,
+        "stroke_color": None,
+        "draw_border_animation_config": {},
+        "fill_animation_config": {},
+    }
+
+    def __init__(self, vmobject, **kwargs):
+        self.check_validity_of_input(vmobject)
+        super().__init__(vmobject, **kwargs)
+
+    def check_validity_of_input(self, vmobject):
+        if not isinstance(vmobject, VMobject):
+            raise Exception(
+                "DrawBorderThenFill only works for VMobjects"
+            )
+
+    def begin(self):
+        self.outline = self.get_outline()
+        super().begin()
+
+    def get_outline(self):
+        outline = self.mobject.copy()
+        outline.set_fill(opacity=0)
+        for sm in outline.family_members_with_points():
+            sm.set_stroke(
+                color=self.get_stroke_color(sm),
+                width=self.stroke_width
+            )
+        return outline
+
+    def get_stroke_color(self, vmobject):
+        if self.stroke_color:
+            return self.stroke_color
+        elif vmobject.get_stroke_width() > 0:
+            return vmobject.get_stroke_color()
+        return vmobject.get_color()
+
+    def get_all_mobjects(self):
+        return [*super().get_all_mobjects(), self.outline]
+
+    def interpolate_submobject(self, submob, start, outline, alpha):
+        index, subalpha = integer_interpolate(0, 2, alpha)
+        if index == 0:
+            submob.pointwise_become_partial_mod(
+                outline, 0, subalpha
+            ).make_jagged()
             submob.match_style(outline)
         else:
             submob.interpolate(outline, start, subalpha)
