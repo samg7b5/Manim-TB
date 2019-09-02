@@ -337,10 +337,19 @@ class SceneFileWriter(object):
             '-hide_banner',
             ]
             self.image_dir_pngs = image_dir
-        commands += ['-loglevel', 'error',
-            '-c', 'copy',
-            movie_file_path
-        ]
+            
+        commands += ['-loglevel', 'error']
+        
+        if not self.save_as_gif:
+            commands +=[
+                '-c', 'copy',
+                movie_file_path
+            ]
+        if self.save_as_gif:
+            movie_file_path=self.gif_file_path
+            commands +=[
+                movie_file_path,
+            ]
         if not self.includes_sound:
             commands.insert(-1, '-an')
 
