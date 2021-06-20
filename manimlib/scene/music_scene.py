@@ -1,35 +1,91 @@
 from manimlib.imports import *
 
-class tecla_blanca(SVGMobject):
-    CONFIG={
-    "file_name":"music_symbols/tecla_blanca"
+class Parentheses(TexMobject):
+    CONFIG = {
+        "buff": 0.2,
+        "width_multiplier": 2,
+        "max_num_quads": 15,
+        "min_num_quads": 0,
+        "background_stroke_width": 0,
+        "parametro": 2,
     }
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        SVGMobject.__init__(self, 
-            file_name=self.file_name, 
+
+    def __init__(self, mobject, direction=DOWN,**kwargs):
+        digest_config(self, kwargs, locals())
+        angle = -np.arctan2(*direction[:2]) + np.pi
+        mobject.rotate(-angle, about_point=ORIGIN)
+        left = mobject.get_corner(DOWN + LEFT)
+        right = mobject.get_corner(DOWN + RIGHT)
+        target_width = right[0] - left[0]
+
+        # Adding int(target_width) qquads gives approximately the right width
+        num_quads = np.clip(
+            int(self.width_multiplier * target_width*self.parametro),
+            self.min_num_quads, self.max_num_quads
+        )
+        tex_string = "\\aoverbrace[l@{}r]{%s}" % (num_quads * "\\qquad")
+        TexMobject.__init__(self, tex_string, **kwargs)
+        self.tip_point_index = np.argmin(self.get_all_points()[:, 1])
+        self.stretch_to_fit_width(target_width)
+        self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
+        for mob in mobject, self:
+            mob.rotate(angle, about_point=ORIGIN)
+
+    def put_at_tip(self, mob, use_next_to=True, **kwargs):
+        if use_next_to:
+            mob.next_to(
+                self.get_tip(),
+                np.round(self.get_direction()),
+                **kwargs
+            )
+        else:
+            mob.move_to(self.get_tip())
+            buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
+            shift_distance = mob.get_width() / 2.0 + buff
+            mob.shift(self.get_direction() * shift_distance)
+        return self
+
+    def get_text(self, *text, **kwargs):
+        text_mob = TextMobject(*text)
+        self.put_at_tip(text_mob, **kwargs)
+        return text_mob
+
+    def get_tex(self, *tex, **kwargs):
+        tex_mob = TexMobject(*tex)
+        self.put_at_tip(tex_mob, **kwargs)
+        return tex_mob
+
+    def get_tip(self):
+        # Very specific to the LaTeX representation
+        # of a brace, but it's the only way I can think
+        # of to get the tip regardless of orientation.
+        return self.get_all_points()[self.tip_point_index]
+
+    def get_direction(self):
+        vect = self.get_tip() - self.get_center()
+        return vect / get_norm(vect)
+
+def tecla_blanca():
+    svg = SVGMobject(
+            file_name = "tecla_blanca",
             fill_opacity = 1,
             stroke_width = 4,
             height = 1.37,
             stroke_color = BLACK,
-            **kwargs)
-        self.set_fill(WHITE,1)
+        )
+    svg.set_fill(WHITE,1)
+    return svg
 
-class tecla_negra(SVGMobject):
-    CONFIG={
-    "file_name":"music_symbols/tecla_negra"
-    }
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        SVGMobject.__init__(self, 
-            file_name=self.file_name, 
+def tecla_negra():
+    svg = SVGMobject(
+            file_name = "tecla_negra",
             fill_opacity = 1,
             stroke_width = 4,
             height = 0.87,
             stroke_color = BLACK,
-            **kwargs)
-        self.set_fill(BLACK,1)
-
+        )
+    svg.set_fill(BLACK,1)
+    return svg
 
 class MusicalScene(Scene):
     CONFIG={
@@ -90,6 +146,18 @@ class MusicalScene(Scene):
         self.definir_cifrado()
         self.definir_cambios_notas()
 
+        self.colores=[self.color_bajo,self.color_tenor,self.color_contra,self.color_soprano]
+        self.cambios_colores_teclas=[]
+        for t in range(len(self.teclas)):
+            self.cambios_colores_teclas.append(list(zip(self.teclas[t],self.colores)))
+
+        self.definir_colores()
+
+        for i_p,color in self.colores_notas:
+            for i in i_p:
+                self.partitura[i].set_color(color)
+
+
 
     def definir_teclado(self,octavas,prop,opac,pos=ORIGIN):
         teclado=VGroup()
@@ -148,15 +216,15 @@ class MusicalScene(Scene):
 
     def definir_notas_piano(self):
         octavas=7
-        do=[3+12*n for n in range(octavas)]
-        do_s=[3+1+12*n for n in range(octavas)]
-        re=[3+2+12*n for n in range(octavas)]
-        re_s=[3+3+12*n for n in range(octavas)]
-        mi=[3+4+12*n for n in range(octavas)]
-        fa=[3+5+12*n for n in range(octavas)]
-        fa_s=[3+6+12*n for n in range(octavas)]
-        sol=[3+7+12*n for n in range(octavas)]
-        sol_s=[3+8+12*n for n in range(octavas)]
+        do=[*[3+12*n for n in range(octavas)]]
+        do_s=[*[3+1+12*n for n in range(octavas)]]
+        re=[*[3+2+12*n for n in range(octavas)]]
+        re_s=[*[3+3+12*n for n in range(octavas)]]
+        mi=[*[3+4+12*n for n in range(octavas)]]
+        fa=[*[3+5+12*n for n in range(octavas)]]
+        fa_s=[*[3+6+12*n for n in range(octavas)]]
+        sol=[*[3+7+12*n for n in range(octavas)]]
+        sol_s=[*[3+8+12*n for n in range(octavas)]]
         la=[0,*[3+9+12*n for n in range(octavas)]]
         la_s=[1,*[3+10+12*n for n in range(octavas)]]
         si=[2,*[3+11+12*n for n in range(octavas)]]
