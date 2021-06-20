@@ -5,6 +5,8 @@ TODO:
 * customise music stuff
 * English translations
 
+Run animations from Manim-TB directory using `python manim.py scene.py [SceneClassName]`
+
 Original README:
 
 <h2 align=center><i> ENGLISH </i></h2>
