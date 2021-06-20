@@ -162,7 +162,7 @@ class Parentheses(TexMobject):
             int(self.width_multiplier * target_width),
             self.min_num_quads, self.max_num_quads
         )
-        tex_string = "\\aoverbrace[l@{}r]{%s}" % (num_quads * "\\qquad") # LaTeX has sometimes (not always) fails rendering this line: 
+        tex_string = "\\aoverbrace[l@{}r]{%s}" % (num_quads * "\\qquad") # LaTeX sometimes (not always) fails rendering this line: 
 #         ! Undefined control sequence.
 #         <argument>  \aoverbrace 
 #                         [l@{}r]{\qquad \qquad \qquad \qquad \qquad \qquad \q...
