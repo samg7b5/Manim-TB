@@ -1,3 +1,14 @@
+This is a fork of ElteoremadeBeethoven (TheoremOfBeethoven) version of 3b1b's Manim library. Edits have been made specific to my own system.
+
+TODO:
+* get music stuff working (DONE)
+* customise music stuff
+* English translations
+
+Run animations from Manim-TB directory using `python manim.py scene.py [SceneClassName]`
+
+Original README:
+
 <h2 align=center><i> ENGLISH </i></h2>
 
 This is my personal version that I use to make my projects. It has some modifications and additions, the codes of my projects are in the folders "projects".

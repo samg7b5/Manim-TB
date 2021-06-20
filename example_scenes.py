@@ -33,7 +33,7 @@ class PruebaText(Scene):
         current_os=platform.system()
         print(current_os)
         grupo=VGroup(
-            Text("Español"),Formula(r"\lim_{x\to\infty}\frac{1}{x}=0")
+            Text("English"),Formula(r"\lim_{x\to\infty}\frac{1}{x}=0")
             ).arrange(DOWN)
 
         self.add(grupo)
