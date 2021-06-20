@@ -169,6 +169,7 @@ class Parentheses(TexMobject):
 #         l.51 \end{align*}
         # maybe {} should be { }?  https://tex.stackexchange.com/questions/326213/alignment-of-text-in-three-columns-using-tabular-envirnonment
         # in the video it literally shows "[l@r]" so something is not parsing correctly...
+        # (also see scene/music_scene.py which has the same tex_string)
         TexMobject.__init__(self, tex_string, **kwargs)
         self.tip_point_index = np.argmin(self.get_all_points()[:, 1])
         self.stretch_to_fit_width(target_width)
