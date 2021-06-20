@@ -1,6 +1,7 @@
 import os
 import hashlib
 import platform
+import sys
 
 from manimlib.constants import TEX_DIR
 from manimlib.constants import TEX_TEXT_TO_REPLACE
@@ -44,29 +45,35 @@ def generate_tex_file(expression, template_tex_file_body):
 
 
 def tex_to_dvi(tex_file):
-    result = tex_file.replace(".tex", ".dvi" if not TEX_USE_CTEX else ".xdv")
+    result = tex_file.replace(".tex", ".dvi")# if not TEX_USE_CTEX else ".xdv")
     if not os.path.exists(result):
         commands = [
             "latex",
-            "-interaction=batchmode",
-            "-halt-on-error",
-            "-output-directory=" + TEX_DIR,
-            tex_file,
-            ">",
-            os.devnull
-        ] if not TEX_USE_CTEX else [
-            "xelatex",
-            "-no-pdf",
-            "-interaction=batchmode",
-            "-halt-on-error",
-            "-output-directory=" + TEX_DIR,
-            tex_file,
-            ">",
-            os.devnull
-        ]
+            "-interaction=nonstopmode",
+            # "-halt-on-error",
+            "-output-directory=\"" + TEX_DIR.replace("\\","/").lstrip("./").replace("//","/") + "\"",
+            "\"" + tex_file.replace("\\","/").lstrip("./").replace("//","/") + "\"",
+            #">",
+            #os.devnull
+        ] #if not TEX_USE_CTEX else [
+        #     "xelatex",
+        #     "-no-pdf",
+        #     "-interaction=batchmode",
+        #     "-halt-on-error",
+        #     "-output-directory=" + TEX_DIR,
+        #     tex_file,
+        #     ">",
+        #     os.devnull
+        # ]
         exit_code = os.system(" ".join(commands))
         if exit_code != 0:
+            latex_output = ''
             log_file = tex_file.replace(".tex", ".log")
+            if os.path.exists(log_file):
+                with open(log_file, 'r') as f:
+                    latex_output = f.read()
+            if latex_output:
+                sys.stderr.write(latex_output)
             raise Exception(
                 ("Latex error converting to dvi. " if not TEX_USE_CTEX
                 else "Xelatex error converting to xdv. ") +
@@ -81,7 +88,7 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
     Returns a list of PIL Image objects for these images sorted as they
     where in the dvi
     """
-    result = dvi_file.replace(".dvi" if not TEX_USE_CTEX else ".xdv", ".svg")
+    result = dvi_file.replace(".dvi", ".svg")
     if not os.path.exists(result):
         commands = [
             "dvisvgm",
@@ -92,13 +99,5 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
             "-o",
             result,
         ]
-        if CURRENT_OS=="Darwin":
-            commands+=[
-                f"--libgs='/usr/local/Cellar/ghostscript/{libgs_version}/lib/libgs.dylib'" 
-            ]
-        commands+=[
-                ">",
-                os.devnull
-            ]
         os.system(" ".join(commands))
     return result
